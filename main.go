@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 type Student struct {
@@ -36,19 +36,40 @@ type StudentData struct {
 	CardCredit CardCredit `json:"card_credit,omitempty"`
 }
 
+type Config struct {
+	DATABASE_URL  string `mapstructure:"DATABASE_URL"`
+}
+
+func LoadConfig(path string) (config Config, err error) {
+    viper.AddConfigPath(path)
+    viper.SetConfigName("app")
+    viper.SetConfigType("env")
+
+    viper.AutomaticEnv()
+
+    err = viper.ReadInConfig()
+    if err != nil {
+        return
+    }
+
+    err = viper.Unmarshal(&config)
+    return
+}
+
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
-	}
+	config, err := LoadConfig(".")
+    if err != nil {
+        log.Fatal("cannot load config:", err)
+    }
 
-	// Получаем строку подключения к БД
-	connString := os.Getenv("DATABASE_URL")
-
-	if connString == "" {
-		log.Fatal("DATABASE_URL не найден в .env")
+	if config.DATABASE_URL == "" {
+		log.Fatal("DATABASE_URL не найден в переменных окружения")
 	}
-	conn, err := pgx.Connect(context.Background(), connString)
+	
+	// log.Printf("Ошибка парсинга шаблона: %v", cnf.DatabaseUrl)
+
+	// fmt.Fprintf(os.Stderr, cnf.DatabaseUrl)
+	conn, err := pgx.Connect(context.Background(), config.DATABASE_URL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
