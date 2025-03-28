@@ -1,0 +1,7 @@
+env: "local"
+
+storage:
+	database_url: "postgres://postgres:postgres@172.27.0.2:5432/postgres"
+
+server:
+	port: 8080
