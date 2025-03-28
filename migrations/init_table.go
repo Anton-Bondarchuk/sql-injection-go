@@ -7,21 +7,17 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Ошибка загрузки .env файла")
+	// }
 
 	// Получаем строку подключения к БД
-	connString := os.Getenv("DATABASE_URL")
+	connString := "postgres://postgres:postgres@localhost:5432/postgres"
 
-	if connString == "" {
-		log.Fatal("DATABASE_URL не найден в .env")
-	}
 	conn, err := pgx.Connect(context.Background(), connString)
 	if err != nil {
 		log.Fatalf("Невозможно подключиться к базе данных: %v", err)
@@ -30,11 +26,11 @@ func main() {
 
 	// todo: convert to must load 
 	// todo: write personnaly file for each migration
-	sqlBytesInitTable, err := os.ReadFile("./migration/init_table.sql")
+	sqlBytesInitTable, err := os.ReadFile("./init_table.sql")
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла миграции: %v", err)
 	}
-	sqlBytesSeeds, err := os.ReadFile("./migration/seeds.sql")
+	sqlBytesSeeds, err := os.ReadFile("./seeds.sql")
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла миграции: %v", err)
 	}

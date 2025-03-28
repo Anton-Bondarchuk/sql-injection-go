@@ -48,9 +48,11 @@ func main() {
 	router.GET("/students", injectionHandler.GetStudentInjection)
 	router.GET("/students_safe", injectionHandler.GetStudentsSafe)
 
-	go func() {
-		router.Run("0.0.0.0:8080")
-	}()
+	// go func() {
+	// 	router.Run("0.0.0.0:8080")
+	// }()
+	router.Run("0.0.0.0:8080")
+
 
 	// TODO: Graceful shutdown 
 }

@@ -37,6 +37,7 @@ func (h* IjectionHandler) GetStudentsSafe(c *gin.Context) {
 	id, err := strconv.Atoi(query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": "Invalid student number", "number": query})
+		return
 	}
 
 	log := h.log.With(
@@ -49,6 +50,7 @@ func (h* IjectionHandler) GetStudentsSafe(c *gin.Context) {
 	students, err := h.injectionProvider.GetStudentsSafe(c.Request.Context(), id)
 	if (err != nil) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, students)
@@ -69,6 +71,7 @@ func (h* IjectionHandler) GetStudentInjection(c *gin.Context) {
 	students, err := h.injectionProvider.GetStudentInjection(c.Request.Context(), query)
 	if (err != nil) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, students)

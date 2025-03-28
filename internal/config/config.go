@@ -15,7 +15,7 @@ type Config struct {
 }
 
 type StorageConfig struct {
-	DatabaseUrl string `yml:"database_url"`
+	DatabaseUrl string  `yaml:"database_url" env-required:"true"`
 }
 
 
@@ -59,7 +59,7 @@ func fetchConfigPath() string {
 	}
 
 	if res == "" {
-		res = "/config/prod.yml"
+		res = "./config/local.yml"
 	}
 
 	return res
