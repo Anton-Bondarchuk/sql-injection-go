@@ -1,15 +1,15 @@
 services:
-  # app:
-  #   container_name: app_sql_injection
-  #   build:
-  #     context: ..
-  #     dockerfile: docker/Dockerfile
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - postgres
+  app:
+    container_name: app_sql_injection
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+    networks:
+      - postgres
 
   postgres:
     container_name: postgres_sql_injection

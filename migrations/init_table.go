@@ -5,51 +5,41 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sql-injection-go/internal/config"
+	"sql-injection-go/internal/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
 )
 
 func main() {
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Ошибка загрузки .env файла")
-	// }
+	config := config.MustLoad()
 
-	// Получаем строку подключения к БД
-	connString := "postgres://postgres:postgres@localhost:5432/postgres"
-
-	conn, err := pgx.Connect(context.Background(), connString)
+	connString := config.StorageConfig.DatabaseUrl
+	storage, err := storage.New(context.Background(), connString)
 	if err != nil {
 		log.Fatalf("Невозможно подключиться к базе данных: %v", err)
 	}
-	defer conn.Close(context.Background())
 
-	// todo: convert to must load 
-	// todo: write personnaly file for each migration
-	sqlBytesInitTable, err := os.ReadFile("./init_table.sql")
-	if err != nil {
-		log.Fatalf("Ошибка чтения файла миграции: %v", err)
-	}
-	sqlBytesSeeds, err := os.ReadFile("./seeds.sql")
-	if err != nil {
-		log.Fatalf("Ошибка чтения файла миграции: %v", err)
-	}
-	sqlScriptInitTable := string(sqlBytesInitTable)
-	sqlScriptSeeds := string(sqlBytesSeeds)
+	init_table_path := "./init_table.sql"
+	seeds_path := "./seeds.sql"
 
-	_, err = conn.Exec(context.Background(), sqlScriptInitTable)
-	op := "sql init table"
-	if err != nil {
-		log.Fatalf("Ошибка выполнения миграции: " + op + "%v", err)
-	}
-
-	fmt.Println("Миграция " + op + " успешно выполнены!")
-
-	_, err = conn.Exec(context.Background(), sqlScriptSeeds)
-	op = "seeds"
-	if err != nil {
-		log.Fatalf("Ошибка выполнения миграции: " + op + "%v", err)
-	}
-
-	fmt.Println("Миграция " + op + " успешно выполнены!")
+	mustMigrate(init_table_path, storage.Conn, "sql init table")
+	mustMigrate(seeds_path, storage.Conn, "seeds")
 }
+
+
+func mustMigrate(path string, conn *pgx.Conn, op string) {
+	sqlBytes, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла миграции: %v", err)
+		panic(err)
+	}
+
+	_, err = conn.Exec(context.Background(), string(sqlBytes))
+	if err != nil {
+		log.Fatalf("Ошибка выполнения миграции: " + op + "%v", err)
+		panic(err)
+	}
+
+	fmt.Println("Миграция " + op + " успешно выполнена!")
+}	
