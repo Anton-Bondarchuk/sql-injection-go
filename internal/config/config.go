@@ -10,7 +10,7 @@ import (
 
 
 type Config struct {
-	Env            string     `yaml:"env" env-default:"local"`
+	Env            string     `yaml:"env" env-default:"prod"`
 	StorageConfig  StorageConfig     `yaml:"storage" env-required:"true"`
 }
 
