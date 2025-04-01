@@ -8,7 +8,7 @@ import (
 	"sql-injection-go/internal/config"
 	"sql-injection-go/internal/storage/postgres"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 }
 
 
-func mustMigrate(path string, conn *pgx.Conn, op string) {
+func mustMigrate(path string, conn *pgxpool.Pool, op string) {
 	sqlBytes, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла миграции: %v", err)

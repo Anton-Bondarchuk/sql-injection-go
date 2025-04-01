@@ -59,7 +59,7 @@ func fetchConfigPath() string {
 	}
 
 	if res == "" {
-		res = "./config/local.yml"
+		res = "./config/prod.yml"
 	}
 
 	return res

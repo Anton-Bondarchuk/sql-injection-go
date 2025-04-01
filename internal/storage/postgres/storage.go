@@ -7,16 +7,16 @@ import (
 
 	"sql-injection-go/internal/domain/models"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Storage struct {
-	Conn *pgx.Conn
+	Conn *pgxpool.Pool
 }
 
 func New(ctx context.Context, databaseUrl string) (*Storage, error) {
 	const op = "storage.postgres.new"
-	conn, err := pgx.Connect(ctx, databaseUrl)
+	conn, err := pgxpool.New(ctx, databaseUrl)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -24,21 +24,16 @@ func New(ctx context.Context, databaseUrl string) (*Storage, error) {
 	return &Storage{Conn: conn}, nil
 }
 
-func (s *Storage) Close(ctx context.Context) error {
-	return s.Conn.Close(ctx)
+func (s *Storage) Close() {
+	s.Conn.Close()
 }
 
 
 func (s* Storage) GetStudentsSafe(ctx context.Context, id int) ([]models.Student, error) {
 	const op = "storage.get_students_safe"
-	const prepQueryName = "studentSafeStmt"
 	query := "SELECT id, age, sex, card_id, name FROM students WHERE id = $1"
-	_, err := s.Conn.Prepare(ctx, "studentSafeStmt", query)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
 	
-	rows, err := s.Conn.Query(ctx, prepQueryName, id)
+	rows, err := s.Conn.Query(ctx, query, id)
 	if err != nil {
 		// var pgErr pgconn.PgError
 		// if errors.As(err, &pgErr) && pgErr.Code == pgconn

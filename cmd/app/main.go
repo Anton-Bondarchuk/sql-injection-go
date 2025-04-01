@@ -26,7 +26,7 @@ func main() {
 	config := config.MustLoad()
 	log := setupLogger(config.Env)
 
-	store, err := storage.New(context.TODO(), config.StorageConfig.DatabaseUrl)
+	store, err := storage.New(context.Background(), config.StorageConfig.DatabaseUrl)
 	if (err != nil) {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
