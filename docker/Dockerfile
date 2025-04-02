@@ -26,8 +26,12 @@ COPY . .
 # Build the Go app
 RUN go build -o main ./cmd/app
 
+# Copy and make the entrypoint script executable
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
 # Run the executable
-CMD ["/app/main"]
+ENTRYPOINT ["/entrypoint.sh"]

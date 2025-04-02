@@ -1,13 +1,12 @@
 package models
 
 type Student struct {
-	Id     int    `json:"id"`
 	Name   string `json:"name"`
+	Id     int    `json:"id"`
 	Age    int    `json:"age"`
-	Sex    bool   `json:"sex"`
 	CardId int    `json:"card_id"`
+	Sex    bool   `json:"sex"`
 }
-
 
 type CardCredit struct {
 	Id         int `json:"id"`
